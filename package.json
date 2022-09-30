@@ -1,21 +1,12 @@
 {
   "name": "remotedeviewwindows",
   "version": "0.1.0",
-  "main": "public/main.js",
+  "main": "./public/main.js",
   "private": true,
   "build": {
-    "extends": null,
-    "appId": "com.rdv.remotescraper",
-    "files": [
-      "dist/**/*",
-      "build/**/*",
-      "node_modules/**/*",
-      "package.json"
-    ],
-    "directories": {
-      "buildResources": "assets"
-    }
+    "appId": "com.rdv.remotescraper"
   },
+  "homepage": "./",
   "dependencies": {
     "@electron/remote": "^1.2.1",
     "@testing-library/jest-dom": "^5.14.1",

@@ -4,6 +4,7 @@ require('@electron/remote/main').initialize()
 const isDev = require('electron-is-dev')
 const path = require("path");
 const url = require("url");
+const fs = require('fs');
 function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
@@ -27,18 +28,31 @@ function createWindow() {
         protocol: 'file',
         slashes: true,
     })
-    console.log(pathHome)
+
     win.loadURL(isDev ?
         'http://localhost:3000':
         pathHome
     );
 }
 
+const tempPath = app.getPath('temp')+'/webpage';
 
 
 app.on('ready', createWindow)
 
 // Quit when all windows are closed.
+app.on('before-quit', function () {
+
+// delete directory recursively
+    try {
+        fs.rmdirSync(tempPath, { recursive: true });
+
+        console.log(`${tempPath} is deleted!`);
+    } catch (err) {
+        console.error(`Error while deleting ${tempPath}.`);
+    }
+})
+
 app.on('window-all-closed', function () {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
@@ -46,6 +60,8 @@ app.on('window-all-closed', function () {
         app.quit()
     }
 })
+
+
 
 app.on('activate', function () {
     // On OS X it's common to re-create a window in the app when the

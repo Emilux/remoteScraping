@@ -8,18 +8,33 @@ const SaveToExistingDirectoryPlugin = window.require('website-scraper-existing-d
 
 function App() {
 
-    const [link,setLink] = useState(null)
+    const [isScraped,setIsScraped] = useState(true)
+    const [isError,setIsError] = useState(false)
+    const [currentUrl,setCurrentUrl] = useState(null)
 
     const submitSearchHandle = (e) => {
         e.preventDefault();
-        setLink(document.getElementById('form1').value)
+        setIsScraped(false);
+        setIsError(false);
+        const link = document.getElementById('form1').value
         if (link){
             const options = {
                 urls: [link],
                 directory: app.getPath('temp')+'/webpage/',
                 plugins: [ new SaveToExistingDirectoryPlugin() ]
             };
-            scrape(options).then((result) => {console.log(result)});
+            scrape(options)
+                .then((result) => {
+                    setIsScraped(true);
+                    setCurrentUrl(link)
+                })
+                .catch((e) => {
+                    setIsScraped(true);
+                    setIsError(true);
+                });
+        } else {
+            setIsScraped(true);
+            setIsError(true);
         }
     }
 
@@ -27,11 +42,23 @@ function App() {
     <div className={'app'}>
         <div className={'p-4 mb-4 d-flex justify-content-center align-items-center flex-column'}>
             <form onSubmit={submitSearchHandle} className="input-group">
-                <MDBInput label='Rechercher' id='form1' type='text' />
-                <button type="submit" className="btn btn-primary">
-                    <i className="fas fa-search"></i>
+                <MDBInput onClick={() => setIsError(false)} label={isScraped ? 'Rechercher' : 'Chargement...'} id='form1' type='text' />
+                <button type="submit" className={`btn btn-${isError ? "danger" : "primary"}`}>
+                    {
+                        isScraped ?
+                            <i className={`fas fa-${isError ? "times" : "search"}`}></i>
+                            :
+                            <i className="fas fa-cog fa-spin"></i>
+                    }
                 </button>
             </form>
+            {currentUrl ?
+                <div>
+                    <span>URL courant : </span>
+                    {currentUrl}
+                </div>
+                : ""
+            }
         </div>
     </div>
   );
